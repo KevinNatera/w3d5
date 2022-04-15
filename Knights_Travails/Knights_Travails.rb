@@ -1,10 +1,11 @@
 require 'byebug'
+require_relative "Node"
 
 class KnightPathFinder
     attr_reader :consideredPositions
 
     def initialize()
-        @rootNode = [0,0]
+        @rootNode = PolyTreeNode.new([0,0])
         @consideredPositions = [@rootNode]
     end
 
@@ -22,35 +23,48 @@ class KnightPathFinder
         newConsideredPositions
        
     end
+
+
     def build_move_tree(last_pos)
         #array = []
         queue = [@rootNode]
+        path = []
+
         while !queue.empty?
+
         queue.each do |start_move|
-            queue += new_move_position(start_move)
-            # array = queue[0] if 
-            return start_move if queue[0] == last_pos
+
+            childArr = new_move_position(start_move)
+
+                    childArr.each do |child|
+                        start_move.add_child(child)
+                    end
             
-            queue.shift
-        end
-        end
-
-
+            queue += new_move_position(start_move)
+        
+             while path[0].parent != nil
+                if queue[0].value == last_pos
+                    path << queue[0]
+                    path.unshift(queue[0].parent)
+                end
+            end
+                path.map { |pos| pos.value     }
+            end
+            
+     end
 
     end
 
 
-    def self.valid_moves(pos)
-        x = pos[0]
-        y = pos[1]
+    def self.valid_moves(node)
+        x = node.value[0]
+        y = node.value[1]
 
         moveArr = [[x + 2, y + 1] , [x + 1, y + 2] , [ x - 2, y - 1] , [x - 1, y - 2] ,[x - 2, y + 1] , [x - 1, y + 2] ,[x + 1, y - 2] , [x + 2 , y - 1] ] 
 
+        moveArr.map { |ele| PolyTreeNode.new(ele) }
+
         moveArr
-    end
-
-    def self.build_move_tree
-
     end
 
 end
